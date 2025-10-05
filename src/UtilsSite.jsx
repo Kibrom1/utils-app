@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBar from './components/SearchBar';
 import Categories from './components/Categories';
 import UtilsGrid from './components/UtilsGrid';
-import PageContainer from './components/Pages';
+import { PageContainer } from './components/Pages';
 import './styles/utils.css';
 
 const utilsData = [
@@ -35,13 +35,170 @@ const categories = [
 const pages = {
   'git-commands': `<h1>🔀 Git Commands Cheat Sheet</h1><div class="command-section"><h4>Basic Git Commands</h4><pre><code># Initialize repository\ngit init\n\n# Clone repository\ngit clone &lt;repository-url&gt;\n\n# Check status\ngit status</code></pre></div>`,
   'docker-commands': `<h1>🐳 Docker Reference Guide</h1><div class="command-section"><h4>Container Operations</h4><pre><code># Run container\ndocker run -it ubuntu bash</code></pre></div>`,
-  'python-snippets': `<h1>🐍 Python Code Snippets</h1><div class="command-section"><h4>List Operations</h4><pre><code>squares = [x**2 for x in range(10)]</code></pre></div>`
+  'python-snippets': `
+    <h1>🐍 Python Code Snippets</h1>
+    <div class="command-section">
+      <h4>List Operations</h4>
+      <pre><code># List comprehensions
+squares = [x**2 for x in range(10)]
+evens = [x for x in range(20) if x % 2 == 0]
+
+# Flatten nested lists
+nested = [[1, 2], [3, 4], [5, 6]]
+flattened = [item for sublist in nested for item in sublist]
+
+# Remove duplicates (preserve order)
+def remove_duplicates(lst):
+    return list(dict.fromkeys(lst))
+
+# Find common elements
+list1 = [1, 2, 3, 4]
+list2 = [3, 4, 5, 6]
+common = list(set(list1) & set(list2))</code></pre>
+    </div>
+
+    <div class="command-section">
+      <h4>Dictionary Operations</h4>
+      <pre><code># Dictionary comprehension
+squares_dict = {x: x**2 for x in range(5)}
+
+# Merge dictionaries (Python 3.9+)
+dict1 = {'a': 1, 'b': 2}
+dict2 = {'c': 3, 'd': 4}
+merged = dict1 | dict2
+
+# Get value with default
+value = my_dict.get('key', 'default_value')
+
+# Invert dictionary
+inverted = {v: k for k, v in original_dict.items()}
+
+# Sort dictionary by value
+sorted_dict = dict(sorted(my_dict.items(), key=lambda x: x[1]))</code></pre>
+    </div>
+
+    <div class="command-section">
+      <h4>File Operations</h4>
+      <pre><code># Read file content
+with open('file.txt', 'r') as f:
+    content = f.read()
+
+# Read lines into list
+with open('file.txt', 'r') as f:
+    lines = f.readlines()
+
+# Write to file
+with open('output.txt', 'w') as f:
+    f.write('Hello World\\n')
+
+# JSON operations
+import json
+
+# Read JSON
+with open('data.json', 'r') as f:
+    data = json.load(f)
+
+# Write JSON
+with open('data.json', 'w') as f:
+    json.dump(data, f, indent=2)</code></pre>
+    </div>
+
+    <div class="command-section">
+      <h4>String Operations</h4>
+      <pre><code># String formatting
+name = "John"
+age = 30
+formatted = f"Name: {name}, Age: {age}"
+
+# Split and join
+words = text.split(' ')
+joined = '-'.join(words)
+
+# Remove whitespace
+cleaned = text.strip()
+
+# Replace text
+new_text = text.replace('old', 'new')
+
+# Check string properties
+text.isdigit()   # all digits
+text.isalpha()   # all letters
+text.startswith('prefix')
+text.endswith('suffix')</code></pre>
+    </div>
+  `,
+  'js-utilities': `<h1>⚡ JavaScript Utilities</h1><div class="command-section"><h4>ES6+ Features</h4><pre><code>// Arrow functions
+const add = (a, b) => a + b;
+
+// Destructuring
+const { name, age } = person;
+const [first, second] = array;
+
+// Template literals
+const message = \`Hello \${name}, you are \${age} years old\`;
+
+// Spread operator
+const newArray = [...oldArray, newItem];
+const newObject = {...oldObject, newProp: value};
+
+// Array methods
+const doubled = numbers.map(x => x * 2);
+const evens = numbers.filter(x => x % 2 === 0);
+const sum = numbers.reduce((acc, curr) => acc + curr, 0);</code></pre></div>`,
+  'css-tricks': `<h1>🎨 CSS Tricks & Snippets</h1><div class="command-section"><h4>Flexbox Layout</h4><pre><code>/* Flexbox container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Flexbox items */
+.item {
+  flex: 1;
+  align-self: stretch;
+}</code></pre></div><div class="command-section"><h4>Grid Layout</h4><pre><code>/* CSS Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}</code></pre></div>`,
+  'linux-commands': `<h1>🐧 Linux Commands Guide</h1><div class="command-section"><h4>File Operations</h4><pre><code># List files
+ls -la
+
+# Copy files
+cp source.txt destination.txt
+
+# Move/rename files
+mv oldname.txt newname.txt
+
+# Find files
+find /path -name "*.txt"
+
+# Search in files
+grep "pattern" file.txt</code></pre></div>`
 };
 
 export default function UtilsSite() {
   const [search, setSearch] = useState('');
   const [active, setActive] = useState('all');
   const [selectedPage, setSelectedPage] = useState(null);
+
+  useEffect(() => {
+    if (selectedPage) {
+      // scroll to top when a page is opened
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [selectedPage]);
+
+  const allPages = React.useMemo(() => {
+    const fallbackPages = Object.fromEntries(
+      utilsData
+        .filter(u => !pages[u.id]) // Only create fallbacks for pages that don't exist
+        .map(u => [u.id, `<h1>${u.title}</h1><div class="command-section"><pre><code>${u.description}</code></pre></div>`])
+    );
+    return {...pages, ...fallbackPages};
+  }, []);
 
   return (
     <div className="container">
@@ -53,11 +210,15 @@ export default function UtilsSite() {
         <Categories categories={categories} active={active} onSelect={setActive} />
       </div>
 
-      <div id="homePage">
-        <UtilsGrid utils={utilsData} searchTerm={search} activeCategory={active} onOpen={setSelectedPage} />
-      </div>
+      {/* show home grid only when no page selected */}
+      {!selectedPage && (
+        <div id="homePage">
+          <UtilsGrid utils={utilsData} searchTerm={search} activeCategory={active} onOpen={(id) => setSelectedPage(id)} />
+        </div>
+      )}
 
-      <PageContainer selected={selectedPage} onBack={() => setSelectedPage(null)} pages={{...pages, ...Object.fromEntries(utilsData.map(u=>[u.id, `<h1>${u.title}</h1><div class=\"command-section\"><pre><code>${u.description}</code></pre></div>`]))}} />
+
+      <PageContainer selected={selectedPage} onBack={() => setSelectedPage(null)} pages={allPages} />
 
       <div className="footer">
         <p>💻 Developer Utils Hub - Your productivity toolkit</p>

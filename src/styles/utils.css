@@ -26,8 +26,9 @@ body {
 .header p { font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
 
 .search-bar { margin: 30px 0; position: relative; }
-.search-input { width:100%; padding:15px 50px 15px 20px; font-size:1.1rem; border:none; border-radius:15px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: white; }
+.search-input { width:100%; padding:15px 50px 15px 20px; font-size:1.1rem; border:none; border-radius:15px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: white; outline: none; }
 .search-input::placeholder { color: rgba(255,255,255,0.7); }
+.search-input:focus { background: rgba(255,255,255,0.3); }
 .search-icon { position:absolute; right:15px; top:50%; transform:translateY(-50%); color: rgba(255,255,255,0.7); }
 
 .categories { display:flex; justify-content:center; gap:15px; margin-bottom:40px; flex-wrap:wrap; }
@@ -36,7 +37,7 @@ body {
 
 .utils-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap:25px; margin-bottom:50px; }
 .util-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius:20px; padding:30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: all 0.3s ease; cursor:pointer; border:1px solid rgba(255,255,255,0.2); position:relative; overflow:hidden; }
-.util-card::before { content: ''; position:absolute; top:0; left:0; right:0; height:4px; background: var(--gradient); }
+.util-card::before { content: ''; position:absolute; top:0; left:0; right:0; height:4px; background: linear-gradient(90deg, var(--primary), var(--secondary)); }
 .util-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
 .util-icon { font-size:3rem; margin-bottom:15px; opacity:0.8; }
 .util-card h3 { font-size:1.5rem; margin-bottom:15px; color:#2c3e50; }
