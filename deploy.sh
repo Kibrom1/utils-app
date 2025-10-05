@@ -4,6 +4,13 @@
 
 echo "🚀 Starting deployment process..."
 
+# Clean install to avoid dependency conflicts
+echo "🧹 Cleaning dependencies..."
+rm -rf node_modules package-lock.json
+
+echo "📦 Installing fresh dependencies..."
+npm install
+
 # Check if build directory exists
 if [ ! -d "build" ]; then
     echo "📦 Creating production build..."
